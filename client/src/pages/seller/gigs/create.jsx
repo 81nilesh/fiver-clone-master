@@ -24,6 +24,7 @@ function CreateGigs() {
     price: 0,
     shortDesc: "",
   });
+
   const removeFeature = (index) => {
     const clonedFeatures = [...features];
     clonedFeatures.splice(index, 1);
@@ -40,6 +41,7 @@ function CreateGigs() {
       setData({ ...data, feature: "" });
     }
   };
+
   const addGig = async () => {
     const { category, description, price, revisions, time, title, shortDesc } =
       data;
@@ -66,19 +68,28 @@ function CreateGigs() {
         time,
         shortDesc,
       };
-      const response = await axios.post(ADD_GIG_ROUTE, formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${cookies.jwt}`,
-        },
-        params: gigData,
-      });
-      if (response.status === 201) {
-        router.push("/seller/gigs");
+      try {
+        const response = await axios.post(ADD_GIG_ROUTE, formData, {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${cookies.jwt}`,
+          },
+          params: gigData,
+        });
+        if (response.status === 201) {
+          router.push("/seller/gigs");
+        } else {
+          console.error("Failed to create gig:", response);
+        }
+      } catch (error) {
+        console.error("Error creating gig:", error);
       }
+    } else {
+      console.warn("All fields are required!");
     }
   };
+
   return (
     <div className="min-h-[80vh] my-10 mt-0 px-32 ">
       <h1 className="text-6xl text-gray-900 mb-5">Create a new Gig</h1>
